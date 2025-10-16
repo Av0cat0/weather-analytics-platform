@@ -2,7 +2,7 @@
 
 Complete weather monitoring system with OpenWeatherMap API, RabbitMQ, Elasticsearch, Logstash, Grafana, and Jenkins.
 
-![Grafana Weather Dashboard](grafana/grafana.JPG)
+![Grafana Weather Dashboard](images/grafana.JPG)
 
 ## Features
 

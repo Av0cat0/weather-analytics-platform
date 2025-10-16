@@ -202,3 +202,6 @@ I used my past experience of an old issue I had years ago and converted all the 
 curl command didn't work in PowerShell, caused parameter ambiguity errors.
 Due to the assignment content and purpose, I decided not to troubleshoot it and invest the remaining time on more important issues
 
+### Grafana aggregations issue
+
+I began with using bucketAggs but when it was empty it caused "missing metrics and aggregations" errors so I added date_histogram bucket aggregations to all stat panels

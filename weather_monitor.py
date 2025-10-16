@@ -9,7 +9,7 @@ import time
 import json
 import logging
 import requests
-import socket
+import pika
 from datetime import datetime
 from typing import Dict, Any
 import schedule
@@ -25,21 +25,37 @@ class WeatherMonitor:
     def __init__(self):
         self.api_key = os.getenv('OPENWEATHER_API_KEY', 'your_api_key_here')
         self.city = os.getenv('CITY_NAME', 'Tel Aviv')  # Default to Tel Aviv
-        self.logstash_host = os.getenv('LOGSTASH_HOST', 'logstash')
-        self.logstash_port = int(os.getenv('LOGSTASH_PORT', '5044'))
+        self.rabbitmq_host = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+        self.rabbitmq_port = int(os.getenv('RABBITMQ_PORT', '5672'))
+        self.queue_name = os.getenv('QUEUE_NAME', 'weather_data')
         self.base_url = "http://api.openweathermap.org/data/2.5/weather"
     
-    def send_to_logstash(self, data: Dict[str, Any]):
+    def send_to_rabbitmq(self, data: Dict[str, Any]):
         try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((self.logstash_host, self.logstash_port))
-            message = json.dumps(data, ensure_ascii=False) + '\n'
-            sock.send(message.encode('utf-8'))
-            sock.close()
-            print(f"Data sent to Logstash")
+            connection = pika.BlockingConnection(
+                pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port)
+            )
+            channel = connection.channel()
+            
+            # Declare the queue
+            channel.queue_declare(queue=self.queue_name, durable=True)
+            
+            # Publish the message
+            message = json.dumps(data, ensure_ascii=False)
+            channel.basic_publish(
+                exchange='',
+                routing_key=self.queue_name,
+                body=message,
+                properties=pika.BasicProperties(
+                    delivery_mode=2,  # Make message persistent
+                )
+            )
+            
+            connection.close()
+            print(f"Data sent to RabbitMQ")
             
         except Exception as e:
-            logger.error(f"Failed to send data to Logstash: {e}")
+            logger.error(f"Failed to send data to RabbitMQ: {e}")
             raise
     
     def get_weather_data(self) -> Dict[str, Any]:
@@ -92,18 +108,18 @@ class WeatherMonitor:
     def check_temperature_alerts(self, temperature: float):
         """Check temperature against alert thresholds"""
         if temperature < 0:
-            print(f" ALERT: Temperature is {temperature}°C - BELOW FREEZING! ❄️")
+            print(f"ALERT: Temperature is {temperature}°C - BELOW 0°C!")
         elif temperature > 24:
-            print(f" ALERT: Temperature is {temperature}°C - ABOVE 24°C! 🔥")
+            print(f"ALERT: Temperature is {temperature}°C - ABOVE 24°C!")
         else:
-            print(f" Temperature {temperature}°C is within normal range (0-24°C)")
+            print(f"Temperature {temperature}°C is within normal range (0-24°C)")
     
     def collect_and_send_weather(self):
-        """Main function to collect weather data and send to Logstash"""
+        """Main function to collect weather data and send to RabbitMQ"""
         try:
             weather_data = self.get_weather_data()
             self.check_temperature_alerts(weather_data['temperature'])
-            self.send_to_logstash(weather_data)
+            self.send_to_rabbitmq(weather_data)
             
         except Exception as e:
             logger.error(f"Weather data collection failed: {e}")

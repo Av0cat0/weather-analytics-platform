@@ -42,8 +42,6 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:8.11.0
     container_name: weather_logstash
-    ports:
-      - "5044:5044"
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./weather_template.json:/usr/share/logstash/templates/weather_template.json
@@ -91,10 +89,11 @@ services:
     environment:
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
       - CITY_NAME=${CITY_NAME:-Tel Aviv}
-      - LOGSTASH_HOST=logstash
-      - LOGSTASH_PORT=5044
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - QUEUE_NAME=weather_data
     depends_on:
-      logstash:
+      rabbitmq:
         condition: service_healthy
     networks:
       - weather_network

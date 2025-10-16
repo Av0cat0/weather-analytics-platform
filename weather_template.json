@@ -1,0 +1,82 @@
+{
+  "index_patterns": ["weather-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "index.refresh_interval": "5s"
+    },
+    "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "timestamp": {
+        "type": "date"
+      },
+      "timestamp_ms": {
+        "type": "long"
+      },
+      "city": {
+        "type": "keyword"
+      },
+      "country": {
+        "type": "keyword"
+      },
+      "temperature": {
+        "type": "float"
+      },
+      "feels_like": {
+        "type": "float"
+      },
+      "humidity": {
+        "type": "integer"
+      },
+      "pressure": {
+        "type": "integer"
+      },
+      "description": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "weather_main": {
+        "type": "keyword"
+      },
+      "wind_speed": {
+        "type": "float"
+      },
+      "wind_direction": {
+        "type": "integer"
+      },
+      "visibility": {
+        "type": "integer"
+      },
+      "cloudiness": {
+        "type": "integer"
+      },
+      "sunrise": {
+        "type": "date"
+      },
+      "sunset": {
+        "type": "date"
+      },
+      "coord_lat": {
+        "type": "float"
+      },
+      "coord_lon": {
+        "type": "float"
+      },
+      "location": {
+        "type": "geo_point"
+      },
+      "tags": {
+        "type": "keyword"
+      }
+    }
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "alertRules": [
+    {
+      "id": 1,
+      "uid": "weather-temp-low",
+      "title": "Temperature Too Low",
+      "condition": "C",
+      "data": [
+        {
+          "refId": "A",
+          "queryType": "",
+          "relativeTimeRange": {
+            "from": 300,
+            "to": 0
+          },
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "elasticsearch"
+          },
+          "model": {
+            "query": "*",
+            "timeField": "@timestamp",
+            "bucketAggs": [
+              {
+                "type": "date_histogram",
+                "settings": {
+                  "interval": "1m"
+                },
+                "field": "@timestamp",
+                "id": "2"
+              }
+            ],
+            "metrics": [
+              {
+                "type": "avg",
+                "field": "temperature",
+                "id": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "noDataState": "NoData",
+      "executionErrorState": "Alerting",
+      "for": "0s",
+      "annotations": {
+        "summary": "Temperature is below 0°C",
+        "description": "Current temperature is {{ $value }}°C, which is below the threshold of 0°C"
+      },
+      "labels": {
+        "severity": "warning",
+        "service": "weather-monitor"
+      },
+      "rule": {
+        "from": "now-5m",
+        "to": "now",
+        "query": "A"
+      },
+      "conditions": [
+        {
+          "evaluator": {
+            "params": [0],
+            "type": "lt"
+          },
+          "operator": {
+            "type": "and"
+          },
+          "query": {
+            "params": ["A"]
+          },
+          "reducer": {
+            "params": [],
+            "type": "last"
+          },
+          "type": "query"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "uid": "weather-temp-high",
+      "title": "Temperature Too High",
+      "condition": "C",
+      "data": [
+        {
+          "refId": "A",
+          "queryType": "",
+          "relativeTimeRange": {
+            "from": 300,
+            "to": 0
+          },
+          "datasource": {
+            "type": "elasticsearch",
+            "uid": "elasticsearch"
+          },
+          "model": {
+            "query": "*",
+            "timeField": "@timestamp",
+            "bucketAggs": [
+              {
+                "type": "date_histogram",
+                "settings": {
+                  "interval": "1m"
+                },
+                "field": "@timestamp",
+                "id": "2"
+              }
+            ],
+            "metrics": [
+              {
+                "type": "avg",
+                "field": "temperature",
+                "id": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "noDataState": "NoData",
+      "executionErrorState": "Alerting",
+      "for": "0s",
+      "annotations": {
+        "summary": "Temperature is above 24°C",
+        "description": "Current temperature is {{ $value }}°C, which is above the threshold of 24°C"
+      },
+      "labels": {
+        "severity": "warning",
+        "service": "weather-monitor"
+      },
+      "rule": {
+        "from": "now-5m",
+        "to": "now",
+        "query": "A"
+      },
+      "conditions": [
+        {
+          "evaluator": {
+            "params": [24],
+            "type": "gt"
+          },
+          "operator": {
+            "type": "and"
+          },
+          "query": {
+            "params": ["A"]
+          },
+          "reducer": {
+            "params": [],
+            "type": "last"
+          },
+          "type": "query"
+        }
+      ]
+    }
+  ]
+}

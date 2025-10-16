@@ -197,3 +197,8 @@ The alert state shows as the color of the dot, if it's in alert state it will be
 I had some issues when manipulating the time variables due to wrong formats, 
 I used my past experience of an old issue I had years ago and converted all the variables to UTC format using the right ISO and the '+Z' postfix.
 
+### curl command issue
+
+curl command didn't work in PowerShell, caused parameter ambiguity errors.
+Due to the assignment content and purpose, I decided not to troubleshoot it and invest the remaining time on more important issues
+

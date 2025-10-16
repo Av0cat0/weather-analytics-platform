@@ -92,22 +92,17 @@ class WeatherMonitor:
     def check_temperature_alerts(self, temperature: float):
         """Check temperature against alert thresholds"""
         if temperature < 0:
-            print(f"🚨 ALERT: Temperature is {temperature}°C - BELOW FREEZING! ❄️")
+            print(f" ALERT: Temperature is {temperature}°C - BELOW FREEZING! ❄️")
         elif temperature > 24:
-            print(f"🚨 ALERT: Temperature is {temperature}°C - ABOVE 24°C! 🔥")
+            print(f" ALERT: Temperature is {temperature}°C - ABOVE 24°C! 🔥")
         else:
-            print(f"✅ Temperature {temperature}°C is within normal range (0-24°C)")
+            print(f" Temperature {temperature}°C is within normal range (0-24°C)")
     
     def collect_and_send_weather(self):
         """Main function to collect weather data and send to Logstash"""
         try:
-            # Get weather data
             weather_data = self.get_weather_data()
-            
-            # Check temperature alerts
             self.check_temperature_alerts(weather_data['temperature'])
-            
-            # Send to Logstash
             self.send_to_logstash(weather_data)
             
         except Exception as e:
@@ -134,7 +129,6 @@ class WeatherMonitor:
             pass
 
 def main():
-    """Main entry point"""
     monitor = WeatherMonitor()
     monitor.start_monitoring()
 

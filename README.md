@@ -15,7 +15,6 @@ Complete weather monitoring system with OpenWeatherMap API, RabbitMQ, Elasticsea
 ## Requirements
 
 - Docker & Docker Compose
-- OpenWeatherMap API key
 - Git
 
 ## Installation and Setup
@@ -53,7 +52,7 @@ docker-compose down -v
 - **Elasticsearch**: http://localhost:9200
 - **Jenkins**: http://localhost:8080
 
-### 6. Health Checks
+### 4. Health Checks
 
 ```bash
 # Check Elasticsearch
@@ -63,6 +62,11 @@ curl http://localhost:9200/_cluster/health?pretty
 curl "http://localhost:9200/weather-*/_search?pretty&size=1&sort=@timestamp:desc"
 
 # Check RabbitMQ
+Invoke-WebRequest -Uri "http://localhost:15672/api/queues" -Headers @{"Authorization"="Basic Z3Vlc3Q6Z3Vlc3Q="}
+```
+
+**Note:** When checking health for RabbitMQ on a different OS than Windows, you can use this command:
+```bash
 curl -u guest:guest http://localhost:15672/api/queues
 ```
 
@@ -96,95 +100,6 @@ The Pipeline includes:
 
 ## Grafana Alerts
 
-The system includes **automatic alerts** that are **pre-configured** and ready to use:
-
-- **❄️ Low Temperature Alert**: Automatically triggers when temperature drops below **0°C**
-- **🔥 High Temperature Alert**: Automatically triggers when temperature rises above **24°C**
-
-**Alert Features:**
-- ✅ **Pre-configured**: Alerts are already set up in the system
-- ✅ **Automatic**: No manual setup required
-- ✅ **Real-time**: Evaluates every minute
-- ✅ **Visual**: Appears in Grafana dashboard
-- ✅ **Detailed**: Shows current temperature and threshold information
-
-**Alert Configuration:**
-- **Evaluation Frequency**: Every 1 minute
-- **Alert Conditions**: 
-  - Temperature < 0°C (Low alert)
-  - Temperature > 24°C (High alert)
-- **Alert State**: Shows in Grafana Alerting section
-
-## Data Monitoring
-
-The dashboard displays:
-
-- 📊 Temperature graph over time
-- 💧 Humidity graph
-- 🌬️ Wind speed graph
-- 📈 Atmospheric pressure graph
-- 📱 Current statistics
-- ⏰ Precise sampling time at millisecond level
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Application not connecting to RabbitMQ**
-   ```bash
-   docker-compose logs weather_monitor
-   ```
-
-2. **Data not appearing in Grafana**
-   ```bash
-   # Check Elasticsearch
-   curl http://localhost:9200/weather-*/_search?pretty
-   
-   # Check Logstash
-   docker-compose logs logstash
-   ```
-
-3. **API key not working**
-   - Verify the key is correct
-   - Check that the key is active in OpenWeatherMap
-
-### Logs
-
-```bash
-# View logs for all services
-docker-compose logs -f
-
-# Logs for specific service
-docker-compose logs -f weather_monitor
-docker-compose logs -f logstash
-docker-compose logs -f grafana
-```
-
-## Development
-
-### Local Running
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the application
-python weather_monitor.py
-```
-
-
-## License
-
-MIT License
-
-## Contributing
-
-1. Fork the project
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Support
-
-If you have questions or issues, open an issue in the GitHub repository.
+The system includes **automatic alerts** that are **pre-configured** and ready to use.
+The alert automatically triggers when temperature drops below **0°C** or rises above **24°C**
+The alert state shows as the color of the dot, if it's in alert state it will be colored red, otherwise green.
